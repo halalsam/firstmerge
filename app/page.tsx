@@ -94,6 +94,7 @@ export default async function Home({
           languages={langs}
           counts={{ total: s.total, green: s.green, unclaimed: s.unclaimed }}
         />
+        <ScoreLegend />
       </div>
 
       {/* results */}
@@ -176,6 +177,39 @@ function EmptyState({ title, body }: { title: string; body: string }) {
     >
       <div className="text-[17px] font-semibold tracking-[-0.01em]" style={{ color: "var(--ink)" }}>{title}</div>
       <p className="mx-auto mt-2 max-w-sm text-[14px] leading-relaxed" style={{ color: "var(--ink-soft)" }}>{body}</p>
+    </div>
+  );
+}
+
+// One row explaining the Merge Score bands, so a first-time visitor knows
+// what the green/yellow/red dots on the issue cards mean. Thresholds mirror
+// lib/scoring.ts; colors reuse the theme variables both themes define.
+function ScoreLegend() {
+  const bands = [
+    { color: "var(--green)", label: "Likely to merge", range: "65+" },
+    { color: "var(--amber)", label: "Mixed signals", range: "40–64" },
+    { color: "var(--red)", label: "Risky", range: "<40" },
+  ];
+  return (
+    <div
+      className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px]"
+      style={{ color: "var(--ink-faint)" }}
+      aria-label="Merge Score legend"
+    >
+      <span className="font-medium" style={{ color: "var(--ink-soft)" }}>
+        Merge Score
+      </span>
+      {bands.map((b) => (
+        <span key={b.label} className="inline-flex items-center gap-1.5">
+          <span
+            className="inline-block h-2 w-2 rounded-full"
+            style={{ background: b.color }}
+            aria-hidden="true"
+          />
+          {b.label}
+          <span className="tabular-nums">{b.range}</span>
+        </span>
+      ))}
     </div>
   );
 }
